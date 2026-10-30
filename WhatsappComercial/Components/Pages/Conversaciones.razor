@@ -685,7 +685,7 @@
 				{
 					Codigo = !string.IsNullOrEmpty(detalleMeta?.Idioma) ? detalleMeta.Idioma : "es_CO"
 				},
-				Componentes = await ConstruirComponentesEnvioPlantilla(detalleMeta)
+				Componentes = await ConstruirComponentesEnvioPlantilla(detalleMeta, plantillaSeleccionada.ValoresParametros)
 			}
 		};
 
@@ -741,7 +741,7 @@
 		}
 	}
 
-	private async Task<List<ComponenteEnvioDTO>> ConstruirComponentesEnvioPlantilla(PlantillaMetaResponseDTO? detalleMeta)
+	private async Task<List<ComponenteEnvioDTO>> ConstruirComponentesEnvioPlantilla(PlantillaMetaResponseDTO? detalleMeta, List<string> valoresBD)
 	{
 		var listaComponentes = new List<ComponenteEnvioDTO>();
 
@@ -752,8 +752,28 @@
 		{
 			if (comp.Tipo.Equals("BODY", StringComparison.OrdinalIgnoreCase))
 			{
-				var variablesBody = comp.Ejemplo?.TextoCuerpoVariables?.FirstOrDefault();
-				if (variablesBody != null && variablesBody.Any())
+				// Cantidad de variables {{n}} que declara el cuerpo de la plantilla en Meta
+				var indicesVariables = System.Text.RegularExpressions.Regex.Matches(comp.Texto ?? string.Empty, @"\{\{\s*(\d+)\s*\}\}")
+					.Select(m => int.Parse(m.Groups[1].Value))
+					.ToList();
+				int cantidadVariables = indicesVariables.Any() ? indicesVariables.Max() : 0;
+
+				var variablesEjemplo = comp.Ejemplo?.TextoCuerpoVariables?.FirstOrDefault();
+				var variablesBody = new List<string>();
+
+				for (int i = 0; i < cantidadVariables; i++)
+				{
+					if (valoresBD is not null && i < valoresBD.Count)
+					{
+						variablesBody.Add(valoresBD[i]);
+					}
+					else if (variablesEjemplo is not null && i < variablesEjemplo.Count())
+					{
+						variablesBody.Add(variablesEjemplo.ElementAt(i));
+					}
+				}
+
+				if (variablesBody.Any())
 				{
 					listaComponentes.Add(new ComponenteEnvioDTO
 					{

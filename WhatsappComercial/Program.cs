@@ -109,7 +109,7 @@ namespace WhatsappComercial
                                       | ForwardedHeaders.XForwardedProto
                                       | ForwardedHeaders.XForwardedHost
                 };
-                forwardedHeadersOptions.KnownIPNetworks.Clear();
+                forwardedHeadersOptions.KnownNetworks.Clear();
                 forwardedHeadersOptions.KnownProxies.Clear();
                 app.UseForwardedHeaders(forwardedHeadersOptions);
 

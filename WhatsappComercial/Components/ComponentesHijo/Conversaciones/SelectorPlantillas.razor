@@ -406,6 +406,12 @@
                 }
             }
 
+            // Valores en orden de columna: se usan como {{1}}, {{2}}... al enviar a Meta
+            if (PlantillaSeleccionada is not null)
+            {
+                PlantillaSeleccionada.ValoresParametros = listaValoresOrdenados;
+            }
+
             // 2. Asignar también los índices numéricos (1, 2, 3...) según el orden
             for (int i = 0; i < listaValoresOrdenados.Count; i++)
             {
